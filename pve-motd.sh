@@ -6,6 +6,8 @@ INTERFACES=("enp1s0f0" "enp1s0f1") # Customize this list as needed
 # Define colors
 PURPLE='\033[38;5;135m'
 NC='\033[0m' # No Color
+BOLD='\033[1m'
+RED='\033[1;31m'
 
 pad() {
   local text="$1"
@@ -43,28 +45,32 @@ interface_statistics() {
   echo "RX: $(human_readable $rx_rate) / TX: $(human_readable $tx_rate)"
 }
 
-# ASCII Art
-ascii_art=$(cat <<EOF
-   ▄█    █▄    ▄██   ▄      ▄████████    ▄█    █▄     ▄██████▄     ▄████████     ███
-  ███    ███   ███   ██▄   ███    ███   ███    ███   ███    ███   ███    ███ ▀█████████▄
-  ███    ███   ███▄▄▄███   ███    █▀    ███    ███   ███    ███   ███    █▀     ▀███▀▀██
- ▄███▄▄▄▄███▄▄ ▀▀▀▀▀▀███  ▄███▄▄▄      ▄███▄▄▄▄███▄▄ ███    ███   ███            ███   ▀
-▀▀███▀▀▀▀███▀  ▄██   ███ ▀▀███▀▀▀     ▀▀███▀▀▀▀███▀  ███    ███ ▀███████████     ███
-  ███    ███   ███   ███   ███    █▄    ███    ███   ███    ███          ███     ███
-  ███    ███   ███   ███   ███    ███   ███    ███   ███    ███    ▄█    ███     ███
-  ███    █▀     ▀█████▀    ██████████   ███    █▀     ▀██████▀   ▄████████▀     ▄████▀  
-EOF
-)
+# Define the path to the ASCII art file
+ascii_art_file="/root/rtr-pve-motd/ascii_art.txt"
 
-# Display ASCII Art with lolcat for rainbow effect
-echo "$ascii_art" | lolcat
+# Display ASCII Art from the defined location
+if [ -f "$ascii_art_file" ]; then
+    cat "$ascii_art_file" | lolcat
+else
+    echo "ASCII Art file not found."
+fi
 
 echo ""
+echo -e "${PURPLE}${BOLD}System Information${NC}"
+echo "======================"
 echo ""
 
 # System Identification
-echo -e "${NC}System Type: ${PURPLE}Proxmox Node${NC}"
+echo -e "${NC}${BOLD}System Type:${NC} ${PURPLE}Proxmox Node${NC}"
 echo ""
+
+# Check for updates
+updates=$(apt list --upgradable 2>/dev/null | grep -v "Listing..." | wc -l)
+
+if [ "$updates" -gt 0 ]; then
+    echo -e "${RED}${BOLD}Updates available: $updates package(s). Run 'apt update'${NC}"
+    echo ""
+fi
 
 # System Information
 if command -v lsb_release &> /dev/null; then
@@ -74,7 +80,6 @@ else
 fi
 kernel=$(uname -r)
 
-echo -e "System Info:"
 echo -e "${PURPLE}$(pad "Distribution")${NC} $distro"
 echo -e "${PURPLE}$(pad "Kernel")${NC} $kernel"
 echo ""
@@ -112,8 +117,36 @@ disk_usage=$(df -h --total | grep total | awk '{print $3 " used / " $2 " total (
 echo -e "${PURPLE}$(pad "Disk Usage")${NC} $disk_usage"
 echo ""
 
+# Proxmox Stats Heading
+echo -e "${PURPLE}${BOLD}Proxmox Stats${NC}"
+echo "================"
+echo ""
+
+# Node-specific VM and Container Statistics using pvesh
+node_name=$(hostname)
+node_vms=$(pvesh get /nodes/$node_name/qemu --output-format json | jq length)
+node_lxcs=$(pvesh get /nodes/$node_name/lxc --output-format json | jq length)
+node_kvms=$((node_vms))
+
+echo -e "${PURPLE}$(pad "Node VMs")${NC} ${node_vms:-0}"
+echo -e "${PURPLE}$(pad "Node LXC Containers")${NC} ${node_lxcs:-0}"
+echo -e "${PURPLE}$(pad "Node KVM VMs")${NC} ${node_kvms:-0}"
+echo ""
+
+# Cluster-wide VM and Container Statistics using pvesh
+cluster_vms=$(pvesh get /cluster/resources --output-format json | jq '[.[] | select(.type=="qemu")] | length')
+cluster_lxcs=$(pvesh get /cluster/resources --output-format json | jq '[.[] | select(.type=="lxc")] | length')
+cluster_kvms=$((cluster_vms - cluster_lxcs))
+
+echo -e "${PURPLE}$(pad "Total VMs")${NC} ${cluster_vms:-0}"
+echo -e "${PURPLE}$(pad "Total LXC Containers")${NC} ${cluster_lxcs:-0}"
+echo -e "${PURPLE}$(pad "Total KVM VMs")${NC} ${cluster_kvms:-0}"
+echo ""
+
 # Interface statistics
-echo -e "${NC}Interface Statistics:"
+echo -e "${PURPLE}${BOLD}Interface Statistics${NC}"
+echo "========================"
+echo ""
 for iface in "${INTERFACES[@]}"; do
     echo -e "${PURPLE}$iface:${NC} $(interface_statistics $iface)\n"
 done
