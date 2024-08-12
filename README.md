@@ -1,4 +1,4 @@
-# Custom MOTD Script
+# Custom MOTD Script (Still WIP)
 
 This repository contains a custom script to display system information as the Message of the Day (MOTD) on Linux systems. The script provides detailed system statistics, including CPU usage, memory usage, disk usage, network interfaces, and specialized information for Proxmox nodes and Debian-based routers running BIRD.
 
