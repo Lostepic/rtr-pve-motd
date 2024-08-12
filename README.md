@@ -18,11 +18,12 @@ To use this script as your system's MOTD, follow the steps below:
 
 ### 1. Clone the Repository
 
-Clone this repository to your local machine:
+Clone this repository to your local machine and install required packages:
 
 ```bash
 git clone https://github.com/Lostepic/rtr-pve-motd.git
 cd rtr-pve-motd
+apt install bc
 ```
 ### 2. Copy the Script to the Appropriate Directory
 
