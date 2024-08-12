@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the interfaces you want to display
-INTERFACES=("ens18" "ens19" "ens20") # Customize this list as needed
+INTERFACES=("ens18" "ens19" "ens20" "ens21" "ens22" "ens23" "enp2s1" "enp2s2" "enp2s3") # Customize this list as needed
 
 # Define colors
 PURPLE='\033[38;5;135m'
@@ -115,13 +115,10 @@ echo ""
 # BIRD Routing Daemon Information
 if command -v birdc &> /dev/null; then
   bird_status=$(systemctl is-active bird)
-  
+
   bird_protocols_v4=$(birdc show protocols all | grep "v4" | grep -c "  up")
   bird_protocols_v6=$(birdc show protocols all | grep "v6" | grep -c "  up")
-  bird_protocols_down=$(birdc show protocols | grep down | awk '{print $1}' | xargs)
-
-  ipv4_routes=$(ip -4 route | wc -l)
-  ipv6_routes=$(ip -6 route | wc -l)
+  bird_protocols_down=$(birdc show protocols | grep start | awk '{print $1}' | xargs)
 
   bird_memory=$(birdc show memory | awk '/Total:/ {print $2 " " $3}')
 
@@ -133,8 +130,6 @@ if command -v birdc &> /dev/null; then
     echo -e "${PURPLE}$(pad "Protocols Down")${NC} $bird_protocols_down"
   fi
 
-  echo -e "${PURPLE}$(pad "Total Routes (IPv4)")${NC} $ipv4_routes"
-  echo -e "${PURPLE}$(pad "Total Routes (IPv6)")${NC} $ipv6_routes"
   echo -e "${PURPLE}$(pad "BIRD Memory Usage")${NC} $bird_memory"
   echo ""
 fi
