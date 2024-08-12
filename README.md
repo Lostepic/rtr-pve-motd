@@ -23,12 +23,17 @@ Clone this repository to your local machine and install required packages:
 ```bash
 git clone https://github.com/Lostepic/rtr-pve-motd.git
 cd rtr-pve-motd
-apt install bc
+apt install bc ruby
+gem install lolcat
 ```
 ### 2. Copy the Script to the Appropriate Directory
 
 ```bash
-sudo cp custom-motd.sh /etc/update-motd.d/99-custom-motd
+sudo cp rtr-motd.sh /etc/update-motd.d/99-custom-motd
+sudo chmod +x /etc/update-motd.d/99-custom-motd
+```
+```bash
+sudo cp pve-motd.sh /etc/update-motd.d/99-custom-motd
 sudo chmod +x /etc/update-motd.d/99-custom-motd
 ```
 ### 3. (Optional) Disable Default MOTD Scripts
