@@ -21,7 +21,7 @@ To use this script as your system's MOTD, follow the steps below:
 Clone this repository to your local machine:
 
 ```bash
-git clone https://github.com/lostepic/rtr-pve-motd/custom-motd.git
+git clone https://github.com/Lostepic/rtr-pve-motd.git
 cd custom-motd
 ```
 ### 2. Copy the Script to the Appropriate Directory
