@@ -13,7 +13,7 @@ Clone this repository to your local machine and install required packages:
 ```bash
 git clone https://github.com/Lostepic/rtr-pve-motd.git
 cd rtr-pve-motd
-apt install bc ruby
+apt install bc ruby jq
 gem install lolcat
 ```
 ### 2. Run the apply script
