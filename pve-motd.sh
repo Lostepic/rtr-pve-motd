@@ -128,7 +128,6 @@ node_vms=$(pvesh get /nodes/$node_name/qemu --output-format json | jq length)
 node_lxcs=$(pvesh get /nodes/$node_name/lxc --output-format json | jq length)
 node_kvms=$((node_vms))
 
-echo -e "${PURPLE}$(pad "Node VMs")${NC} ${node_vms:-0}"
 echo -e "${PURPLE}$(pad "Node LXC Containers")${NC} ${node_lxcs:-0}"
 echo -e "${PURPLE}$(pad "Node KVM VMs")${NC} ${node_kvms:-0}"
 echo ""
