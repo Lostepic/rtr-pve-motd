@@ -11,10 +11,10 @@ To use this script as your system's MOTD, follow the steps below:
 Clone this repository to your local machine and install required packages:
 
 ```bash
+apt install bc ruby jq git
+gem install lolcat
 git clone https://github.com/Lostepic/rtr-pve-motd.git
 cd rtr-pve-motd
-apt install bc ruby jq
-gem install lolcat
 ```
 ### 2. Run the apply script
 
