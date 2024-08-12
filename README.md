@@ -22,7 +22,7 @@ Clone this repository to your local machine:
 
 ```bash
 git clone https://github.com/Lostepic/rtr-pve-motd.git
-cd custom-motd
+cd rtr-pve-motd
 ```
 ### 2. Copy the Script to the Appropriate Directory
 
