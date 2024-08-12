@@ -17,6 +17,33 @@ pad() {
   printf "${NC}:"
 }
 
+human_readable() {
+  local value=$1
+  if [[ $value -lt 1000 ]]; then
+    echo "${value}bps"
+  elif [[ $value -lt 1000000 ]]; then
+    echo "$(bc <<< "scale=2; $value/1000") Kbps"
+  elif [[ $value -lt 1000000000 ]]; then
+    echo "$(bc <<< "scale=2; $value/1000000") Mbps"
+  else
+    echo "$(bc <<< "scale=2; $value/1000000000") Gbps"
+  fi
+}
+
+interface_statistics() {
+  local iface=$1
+  local rx_bytes1=$(cat /sys/class/net/$iface/statistics/rx_bytes)
+  local tx_bytes1=$(cat /sys/class/net/$iface/statistics/tx_bytes)
+  sleep 1
+  local rx_bytes2=$(cat /sys/class/net/$iface/statistics/rx_bytes)
+  local tx_bytes2=$(cat /sys/class/net/$iface/statistics/tx_bytes)
+
+  local rx_rate=$((($rx_bytes2 - $rx_bytes1) * 8))
+  local tx_rate=$((($tx_bytes2 - $tx_bytes1) * 8))
+
+  echo "RX: $(human_readable $rx_rate) / TX: $(human_readable $tx_rate)"
+}
+
 color_gradient_art() {
   local color1="$1"
   local color2="$2"
@@ -46,7 +73,7 @@ ascii_art=$(cat <<EOF
  | |__| |\ \_/ /| |__  | |__| | |  | | (___    | |   
  |  __  | \   / |  __| |  __  | |  | |\___ \   | |   
  | |  | |  | |  | |____| |  | | |__| |____) |  | |   
- |_|  |_|  |_|  |______|_|  |_|\____/|_____/   |_|                                                                                                            
+ |_|  |_|  |_|  |______|_|  |_|\____/|_____/   |_|   
 EOF
 )
 
@@ -121,10 +148,16 @@ if [ -f /etc/pve/.version ]; then
   echo -e "${NC}Storage Usage:"
   pvesm status | awk 'NR>1 {printf "${DARK_PURPLE}%s${NC}: %s used / %s total (%s used)\n", $1, $3, $2, $5}'
   echo ""
-fi
+
+  # Interface statistics
+  echo -e "${NC}Interface Statistics:"
+  for iface in "${INTERFACES[@]}"; do
+    echo -e "${DARK_PURPLE}$iface:${NC} $(interface_statistics $iface)"
+  done
+  echo ""
 
 # BIRD Routing Daemon Information
-if command -v birdc &> /dev/null; then
+elif command -v birdc &> /dev/null; then
   bird_status=$(systemctl is-active bird)
   bird_protocols_up=$(birdc show protocols | grep up | wc -l)
   bird_protocols_down=$(birdc show protocols | grep down | awk '{print $1}' | xargs)
@@ -145,17 +178,15 @@ if command -v birdc &> /dev/null; then
   echo -e "${DARK_PURPLE}$(pad "Total Routes (IPv6)")${NC} $ipv6_routes"
   echo -e "${DARK_PURPLE}$(pad "BIRD Memory Usage")${NC} $bird_memory"
   echo ""
-fi
 
-# Network Interface Information
-echo -e "${NC}Interfaces:"
-for iface in "${INTERFACES[@]}"; do
-    echo -e "${DARK_PURPLE}$iface:${NC}"
-    ip addr show "$iface" | grep -E "inet |inet6 " | awk '{print $2}' | while read -r ip; do
-        echo -e "  IP.......................: $ip"
-    done
+  # Interface statistics with IPs
+  echo -e "${NC}Interface Statistics:"
+  for iface in "${INTERFACES[@]}"; do
+    echo -e "${DARK_PURPLE}$iface:${NC} $(interface_statistics $iface)"
+    ip addr show "$iface" | grep -E "inet |inet6 " | awk '{print "  IP.......................: "$2}'
     echo ""
-done
+  done
+fi
 
 # Tunnels
 gre_tunnels=$(ip -d link show | grep -c gre)
