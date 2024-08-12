@@ -120,8 +120,8 @@ if command -v birdc &> /dev/null; then
   bird_protocols_v6=$(birdc show protocols all | grep "v6" | grep -c "  up")
   bird_protocols_down=$(birdc show protocols | grep down | awk '{print $1}' | xargs)
 
-  ipv4_routes=$(birdc show route table master4 | grep -c "via")
-  ipv6_routes=$(birdc show route table master6 | grep -c "via")
+  ipv4_routes=$(ip -4 route | wc -l)
+  ipv6_routes=$(ip -6 route | wc -l)
 
   bird_memory=$(birdc show memory | awk '/Total:/ {print $2 " " $3}')
 
