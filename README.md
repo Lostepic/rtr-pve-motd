@@ -25,5 +25,7 @@ bash apply.sh -rtr (for rtr-motd.sh)
 ### Test the MOTD
 
 ```bash
-run-parts /etc/update-motd.d/
+motd
+or
+summary
 ```
