@@ -144,12 +144,9 @@ gre_tunnels=$(ip -d link show | grep -c gre)
 echo -e "${PURPLE}$(pad "Tunnels")${NC} $gre_tunnels"
 echo ""
 
-# Interface statistics with IPs
+# Interface statistics only
 echo -e "${NC}Interface Statistics:"
 for iface in "${INTERFACES[@]}"; do
-    echo -e "${PURPLE}$iface:${NC} $(interface_statistics $iface)\n"
-    ip addr show "$iface" scope global | grep -E "inet |inet6 " | awk '{print "  IP.......................: "$2}' | while read -r ip; do
-        echo -e "$ip"
-    done
-    echo ""
+    echo -e "${PURPLE}$iface:${NC} $(interface_statistics $iface)"
+    echo ""  # Add a new line after each interface's statistics
 done
