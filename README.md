@@ -2,16 +2,6 @@
 
 This repository contains a custom script to display system information as the Message of the Day (MOTD) on Linux systems. The script provides detailed system statistics, including CPU usage, memory usage, disk usage, network interfaces, and specialized information for Proxmox nodes and Debian-based routers running BIRD.
 
-## Features
-
-- Displays system information such as distribution, kernel version, uptime, load averages, and process count.
-- Shows CPU and memory usage.
-- Displays disk usage statistics.
-- Provides detailed information for Proxmox nodes, including running VMs and storage usage.
-- Shows BIRD routing daemon statistics, including active protocols, total routes (IPv4 and IPv6), and memory usage.
-- Lists network interfaces and their associated IP addresses.
-- Counts GRE tunnels if any are configured.
-
 ## Installation Instructions
 
 To use this script as your system's MOTD, follow the steps below:
@@ -26,22 +16,12 @@ cd rtr-pve-motd
 apt install bc ruby
 gem install lolcat
 ```
-### 2. Copy the Script to the Appropriate Directory
+### 2. Run the apply script
 
 ```bash
-sudo cp rtr-motd.sh /etc/update-motd.d/99-custom-motd
-sudo chmod +x /etc/update-motd.d/99-custom-motd
+bash apply.sh -rtr (for rtr-motd.sh)
 ```
-```bash
-sudo cp pve-motd.sh /etc/update-motd.d/99-custom-motd
-sudo chmod +x /etc/update-motd.d/99-custom-motd
-```
-### 3. (Optional) Disable Default MOTD Scripts
 
-```bash
-sudo chmod -x /etc/update-motd.d/*
-sudo chmod +x /etc/update-motd.d/99-custom-motd
-```
 ### Test the MOTD
 
 ```bash
