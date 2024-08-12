@@ -4,7 +4,6 @@
 INTERFACES=("enp1s0f0" "enp1s0f1") # Customize this list as needed
 
 # Define colors
-RAINBOW_GRADIENT=('\033[38;5;196m' '\033[38;5;208m' '\033[38;5;220m' '\033[38;5;82m' '\033[38;5;39m' '\033[38;5;21m' '\033[38;5;201m')
 PURPLE='\033[38;5;135m'
 NC='\033[0m' # No Color
 
@@ -44,34 +43,21 @@ interface_statistics() {
   echo "RX: $(human_readable $rx_rate) / TX: $(human_readable $tx_rate)"
 }
 
-gradient_rainbow_ascii_art() {
-  local art="$1"
-  local color_index=0
-  local total_colors=${#RAINBOW_GRADIENT[@]}
-
-  while IFS= read -r line; do
-    local line_length=${#line}
-
-    for ((i=0; i<line_length; i++)); do
-      printf "${RAINBOW_GRADIENT[$((color_index % total_colors))]}%s" "${line:$i:1}"
-      color_index=$((color_index + 1))
-    done
-    printf "${NC}\n"
-  done <<< "$art"
-}
-
-# Compact ASCII Art without unnecessary spacing
+# ASCII Art
 ascii_art=$(cat <<EOF
-  _    ___     ________ _    _  ____   _____ _______ 
- | |  | \ \   / /  ____| |  | |/ __ \ / ____|__   __|
- | |__| |\ \_/ /| |__  | |__| | |  | | (___    | |   
- |  __  | \   / |  __| |  __  | |  | |\___ \   | |   
- | |  | |  | |  | |____| |  | | |__| |____) |  | |   
- |_|  |_|  |_|  |______|_|  |_|\____/|_____/   |_|   
+   ▄█    █▄    ▄██   ▄      ▄████████    ▄█    █▄     ▄██████▄     ▄████████     ███
+  ███    ███   ███   ██▄   ███    ███   ███    ███   ███    ███   ███    ███ ▀█████████▄
+  ███    ███   ███▄▄▄███   ███    █▀    ███    ███   ███    ███   ███    █▀     ▀███▀▀██
+ ▄███▄▄▄▄███▄▄ ▀▀▀▀▀▀███  ▄███▄▄▄      ▄███▄▄▄▄███▄▄ ███    ███   ███            ███   ▀
+▀▀███▀▀▀▀███▀  ▄██   ███ ▀▀███▀▀▀     ▀▀███▀▀▀▀███▀  ███    ███ ▀███████████     ███
+  ███    ███   ███   ███   ███    █▄    ███    ███   ███    ███          ███     ███
+  ███    ███   ███   ███   ███    ███   ███    ███   ███    ███    ▄█    ███     ███
+  ███    █▀     ▀█████▀    ██████████   ███    █▀     ▀██████▀   ▄████████▀     ▄████▀  
 EOF
 )
 
-gradient_rainbow_ascii_art "$ascii_art"
+# Display ASCII Art with lolcat for rainbow effect
+echo "$ascii_art" | lolcat
 
 echo ""
 echo ""
