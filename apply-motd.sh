@@ -28,10 +28,27 @@ apply_motd() {
     fi
 }
 
+# Function to create a system command for displaying the MOTD
+create_motd_command() {
+    local command_name=$1
+    local command_path="/usr/local/bin/$command_name"
+
+    if [ -f "$command_path" ]; then
+        echo "System command '$command_name' already exists. Skipping creation."
+    else
+        echo "Creating system command '$command_name'..."
+        echo "#!/bin/bash" > $command_path
+        echo "run-parts /etc/update-motd.d/" >> $command_path
+        chmod +x $command_path
+    fi
+}
+
 # Check if a flag is provided and apply the corresponding MOTD
 if [ $# -eq 1 ]; then
     flag="${1#-}" # Remove the leading dash from the flag
     apply_motd "$flag"
+    create_motd_command "motd"   # Creates the `motd` command if it doesn't exist
+    create_motd_command "summary" # Optionally, creates the `summary` command if it doesn't exist
 else
     echo "Usage: apply-motd.sh -flag (e.g., -rtr for rtr-motd.sh or -pve for pve-motd.sh)"
     exit 1
